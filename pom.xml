@@ -474,7 +474,7 @@
         <dependency>
             <groupId>io.github.easy4j</groupId>
             <artifactId>javassist-plus</artifactId>
-            <version>3.0.x.20260630-SNAPSHOT</version>
+            <version>2.0.x.20260630-SNAPSHOT</version>
         </dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -534,7 +534,7 @@
         <dependency>
             <groupId>io.github.easy4j</groupId>
             <artifactId>javassist-plus</artifactId>
-            <version>3.0.x.20260630-SNAPSHOT</version>
+            <version>2.0.x.20260630-SNAPSHOT</version>
         </dependency>
 	</dependencies>
 
