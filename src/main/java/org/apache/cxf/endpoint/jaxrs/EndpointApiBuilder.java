@@ -84,7 +84,7 @@ public class EndpointApiBuilder<T extends EndpointApi> implements Builder<Unload
 	 */
 	public EndpointApiBuilder<T> path(final String path) {
 
-		builder.annotateType(JaxrsEndpointApiUtils.annotPath(constPool, path))
+		builder.annotateType(JaxrsEndpointApiUtils.annotPath(constPool, path));
 		
 		
 		return this;
