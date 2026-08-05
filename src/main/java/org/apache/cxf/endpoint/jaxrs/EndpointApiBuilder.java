@@ -1,5 +1,7 @@
 package org.apache.cxf.endpoint.jaxrs;
 
+import javassist.CtClass;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 
@@ -90,7 +92,8 @@ public class EndpointApiBuilder<T extends EndpointApi> implements Builder<Unload
 	 */
 	public EndpointApiBuilder<T> path(final String path) {
 
-		builder.annotateType(JaxrsEndpointApiUtils.annotPath(constPool, path));
+		builder.annotateType(JaxrsEndpointApiUtils.annotPath(constPool, path))
+;
 		
 		
 		return this;
