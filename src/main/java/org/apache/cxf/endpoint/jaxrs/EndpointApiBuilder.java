@@ -95,7 +95,7 @@ public class EndpointApiBuilder<T extends EndpointApi> implements Builder<Unload
 	 * @param mediaTypes
 	 * @return
 	 */
-	public EndpointApiCtClassBuilder produces(final String... mediaTypes) {
+	public EndpointApiBuilder<T> produces(final String... mediaTypes) {
 
 		String[] noyNullMediaTypes = ArrayUtils.isNotEmpty(mediaTypes) ? mediaTypes : new String[] { "*/*" };
 		ConstPool constPool = this.ccFile.getConstPool();
@@ -107,14 +107,14 @@ public class EndpointApiBuilder<T extends EndpointApi> implements Builder<Unload
 	/**
 	 * 通过给动态类增加 <code>@WebBound</code>注解实现，数据的绑定
 	 */
-	public EndpointApiCtClassBuilder bind(final String uid, final String json) {
+	public EndpointApiBuilder<T> bind(final String uid, final String json) {
 		return bind(new RestBound(uid, json));
 	}
 	
 	/**
 	 * 通过给动态类增加 <code>@WebBound</code>注解实现，数据的绑定
 	 */
-	public EndpointApiCtClassBuilder bind(final RestBound bound) {
+	public EndpointApiBuilder<T> bind(final RestBound bound) {
 
 		ConstPool constPool = this.ccFile.getConstPool();
 		JavassistUtils.addClassAnnotation(declaring, JaxrsEndpointApiUtils.annotWebBound(constPool, bound));
@@ -135,13 +135,13 @@ public class EndpointApiBuilder<T extends EndpointApi> implements Builder<Unload
      *
      * @param src               the source text.
      */
-	public <T> EndpointApiCtClassBuilder makeField(final String src) throws CannotCompileException {
+	public <T> EndpointApiBuilder<T> makeField(final String src) throws CannotCompileException {
 		//创建属性
         declaring.addField(CtField.make(src, declaring));
 		return this;
 	}
 	
-	public <T> EndpointApiCtClassBuilder newField(final Class<T> fieldClass, final String fieldName, final String fieldValue) throws CannotCompileException, NotFoundException {
+	public <T> EndpointApiBuilder<T> newField(final Class<T> fieldClass, final String fieldName, final String fieldValue) throws CannotCompileException, NotFoundException {
 		
 		// 检查字段是否已经定义
 		if(JavassistUtils.hasField(declaring, fieldName)) {
@@ -158,7 +158,7 @@ public class EndpointApiBuilder<T extends EndpointApi> implements Builder<Unload
 		return this;
 	}
 	
-	public <T> EndpointApiCtClassBuilder removeField(final String fieldName) throws NotFoundException {
+	public <T> EndpointApiBuilder<T> removeField(final String fieldName) throws NotFoundException {
 		
 		// 检查字段是否已经定义
 		if(!JavassistUtils.hasField(declaring, fieldName)) {
@@ -170,11 +170,11 @@ public class EndpointApiBuilder<T extends EndpointApi> implements Builder<Unload
 		return this;
 	}
 	
-	public <T> EndpointApiCtClassBuilder newMethod(final Class<T> rtClass, final HttpMethodEnum method, final String name,final String path, final RestBound bound, RestParam<?>... params) throws CannotCompileException, NotFoundException {
+	public <T> EndpointApiBuilder<T> newMethod(final Class<T> rtClass, final HttpMethodEnum method, final String name,final String path, final RestBound bound, RestParam<?>... params) throws CannotCompileException, NotFoundException {
 		return this.newMethod(rtClass , new RestMethod(method, name, path), bound, params);
 	}
 	
-	public <T> EndpointApiCtClassBuilder newMethod(final Class<T> rtClass, final HttpMethodEnum method, final String name,final String path, RestParam<?>... params) throws CannotCompileException, NotFoundException {
+	public <T> EndpointApiBuilder<T> newMethod(final Class<T> rtClass, final HttpMethodEnum method, final String name,final String path, RestParam<?>... params) throws CannotCompileException, NotFoundException {
 		return this.newMethod(rtClass , new RestMethod(method, name, path), params);
 	}
 	
@@ -189,7 +189,7 @@ public class EndpointApiBuilder<T extends EndpointApi> implements Builder<Unload
 	 * @throws CannotCompileException
 	 * @throws NotFoundException 
 	 */ 
-	public <T> EndpointApiCtClassBuilder newMethod(final Class<T> rtClass, final RestMethod method, final RestBound bound, RestParam<?>... params) throws CannotCompileException, NotFoundException {
+	public <T> EndpointApiBuilder<T> newMethod(final Class<T> rtClass, final RestMethod method, final RestBound bound, RestParam<?>... params) throws CannotCompileException, NotFoundException {
 	       
 		ConstPool constPool = this.ccFile.getConstPool();
 		
@@ -219,27 +219,27 @@ public class EndpointApiBuilder<T extends EndpointApi> implements Builder<Unload
         return this;
 	}
 	
-	public <T> EndpointApiCtClassBuilder newMethod(final Class<T> rtClass, final RestMethod method, RestParam<?>... params) throws CannotCompileException, NotFoundException {
+	public <T> EndpointApiBuilder<T> newMethod(final Class<T> rtClass, final RestMethod method, RestParam<?>... params) throws CannotCompileException, NotFoundException {
 		return this.newMethod(rtClass, method, null, params);
 	}
 	
-	public <T> EndpointApiCtClassBuilder newMethod(final HttpMethodEnum method, final String name, final String path, RestParam<?>... params) throws CannotCompileException, NotFoundException {
+	public <T> EndpointApiBuilder<T> newMethod(final HttpMethodEnum method, final String name, final String path, RestParam<?>... params) throws CannotCompileException, NotFoundException {
 		return this.newMethod(null , new RestMethod(method, name, path), null, params);
 	}
 	
-	public <T> EndpointApiCtClassBuilder newMethod(final HttpMethodEnum method, final String name, final String path, final RestBound bound, RestParam<?>... params) throws CannotCompileException, NotFoundException {
+	public <T> EndpointApiBuilder<T> newMethod(final HttpMethodEnum method, final String name, final String path, final RestBound bound, RestParam<?>... params) throws CannotCompileException, NotFoundException {
 		return this.newMethod(null , new RestMethod(method, name, path), bound, params);
 	}
 	
-	public <T> EndpointApiCtClassBuilder newMethod(final RestMethod method, final RestBound bound, RestParam<?>... params) throws CannotCompileException, NotFoundException {
+	public <T> EndpointApiBuilder<T> newMethod(final RestMethod method, final RestBound bound, RestParam<?>... params) throws CannotCompileException, NotFoundException {
 		return this.newMethod(null, method, bound, params);
 	}
 	
-	public <T> EndpointApiCtClassBuilder newMethod(final RestMethod method, RestParam<?>... params) throws CannotCompileException, NotFoundException {
+	public <T> EndpointApiBuilder<T> newMethod(final RestMethod method, RestParam<?>... params) throws CannotCompileException, NotFoundException {
 		return this.newMethod(null, method, null, params);
 	}
 	
-	public <T> EndpointApiCtClassBuilder removeMethod(final String methodName, RestParam<?>... params) throws NotFoundException {
+	public <T> EndpointApiBuilder<T> removeMethod(final String methodName, RestParam<?>... params) throws NotFoundException {
 		
 		// 有参方法
 		if(params != null && params.length > 0) {
