@@ -466,6 +466,11 @@
 			    <version>${byte-buddy.version}</version>
 			</dependency>
 
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.30.2-GA</version>
+        </dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -517,6 +522,11 @@
 		    <artifactId>byte-buddy</artifactId>
 		</dependency>
 
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.30.2-GA</version>
+        </dependency>
 	</dependencies>
 
 </project>
