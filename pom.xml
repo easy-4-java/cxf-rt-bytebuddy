@@ -470,6 +470,11 @@
             <artifactId>javassist</artifactId>
             <version>3.30.2-GA</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.easy4j</groupId>
+            <artifactId>javassist-plus</artifactId>
+            <version>1.0.4.RELEASE</version>
+        </dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -524,6 +529,11 @@
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
             <version>3.30.2-GA</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.easy4j</groupId>
+            <artifactId>javassist-plus</artifactId>
+            <version>1.0.4.RELEASE</version>
         </dependency>
 	</dependencies>
 

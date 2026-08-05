@@ -22,7 +22,7 @@ import net.bytebuddy.NamingStrategy;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType.Unloaded;
 import net.bytebuddy.utility.RandomString;
-import org.apache.cxf.endpoint.utils.JavassistUtils;
+import io.github.easy4j.javassist.utils.JavassistUtils;
 
 /**
  * 
