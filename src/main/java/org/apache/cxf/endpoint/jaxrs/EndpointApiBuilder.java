@@ -12,11 +12,17 @@ import org.apache.cxf.endpoint.jaxrs.definition.RestMethod;
 import org.apache.cxf.endpoint.jaxrs.definition.RestParam;
 import org.apache.cxf.endpoint.utils.JaxrsEndpointApiUtils;
 
+
+import javassist.CtField;
+import javassist.Modifier;
+import javassist.NotFoundException;
+import javassist.CannotCompileException;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.NamingStrategy;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType.Unloaded;
 import net.bytebuddy.utility.RandomString;
+import org.apache.cxf.endpoint.utils.JavassistUtils;
 
 /**
  * 
