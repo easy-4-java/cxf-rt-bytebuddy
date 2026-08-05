@@ -475,6 +475,11 @@
             <artifactId>javassist-plus</artifactId>
             <version>1.0.x.20260630-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.1.6</version>
+        </dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -534,6 +539,11 @@
             <groupId>io.github.easy4j</groupId>
             <artifactId>javassist-plus</artifactId>
             <version>1.0.x.20260630-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.1.6</version>
         </dependency>
 	</dependencies>
 
