@@ -1,6 +1,8 @@
 # cxf-rt-bytebuddy
 
-[![Java](https://img.shields.io/badge/Java-17-orange)] [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
+[English](./README.md) | [简体中文](./README.zh-CN.md)
+
+[![License](https://img.shields.io/badge/license-Apache%202.0-green)
 
 > Generate Apache CXF JAX-WS / JAX-RS endpoint implementations with
 > [Byte Buddy](https://bytebuddy.net) — annotation-driven endpoint model and
