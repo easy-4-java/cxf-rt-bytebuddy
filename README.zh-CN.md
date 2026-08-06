@@ -2,7 +2,7 @@
 
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
-[![License](https://img.shields.io/badge/license-Apache%202.0-green)
+[![Java](https://img.shields.io/badge/Java-17-orange)](https://github.com/easy-4-java/cxf-rt-bytebuddy) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](./LICENSE)
 
 > 使用 [Byte Buddy](https://bytebuddy.net) 生成基于 Apache CXF 的 JAX-WS / JAX-RS
 > 端点实现——注解驱动的端点模型与字节码级绑定辅助类。
