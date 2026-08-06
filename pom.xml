@@ -349,7 +349,9 @@
                 <central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
                 <additionalparam>-Xdoclint:none</additionalparam>
                 <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
-            </properties>
+            
+		<javassist.version>3.32.0-GA</javassist.version>
+		<javax-ws-rs-api.version>2.1.1</javax-ws-rs-api.version></properties>
         </profile>
         <!-- 发布到 Maven Central Portal：mvn -Prelease deploy（GPG 签名 + 源码 + Javadoc + Central 发布插件） -->
 
@@ -588,13 +590,13 @@
             <dependency>
                 <groupId>org.javassist</groupId>
                 <artifactId>javassist</artifactId>
-                <version>3.30.2-GA</version>
+                <version>${javassist.version}</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
             <dependency>
                 <groupId>javax.ws.rs</groupId>
                 <artifactId>javax.ws.rs-api</artifactId>
-                <version>2.1.1</version>
+                <version>${javax-ws-rs-api.version}</version>
             </dependency>
             <!-- For Lombok -->
             <dependency>
