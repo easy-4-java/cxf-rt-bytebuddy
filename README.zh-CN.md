@@ -1,6 +1,8 @@
 # cxf-rt-bytebuddy
 
-[![Java](https://img.shields.io/badge/Java-8-orange)] [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
+[English](./README.md) | [简体中文](./README.zh-CN.md)
+
+[![License](https://img.shields.io/badge/license-Apache%202.0-green)
 
 > 使用 [Byte Buddy](https://bytebuddy.net) 生成基于 Apache CXF 的 JAX-WS / JAX-RS
 > 端点实现——注解驱动的端点模型与字节码级绑定辅助类。
@@ -18,8 +20,6 @@
 - [9. 测试与构建](#9-测试与构建)
 - [10. 版本与分支](#10-版本与分支)
 - [11. 贡献与许可](#11-贡献与许可)
-
-[English](./README.md) | [简体中文](./README.zh-CN.md)
 
 ## 1. 项目概述
 
