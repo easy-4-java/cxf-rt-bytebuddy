@@ -31,7 +31,7 @@ package org.apache.cxf.endpoint.jaxrs.definition;
  * instantiate it directly when authoring descriptors programmatically.</p>
  *
  * @param <T> the Java type of the parameter being described.
- * @author easy-4-java contributors
+ * @author [@Loong Wan](https://github.com/loong10k)
  * @since 3.0.0
  * @see HttpParamEnum
  * @see javax.ws.rs.DefaultValue

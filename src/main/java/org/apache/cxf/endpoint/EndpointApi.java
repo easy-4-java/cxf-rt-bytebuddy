@@ -34,7 +34,7 @@ import java.lang.reflect.InvocationHandler;
  * (the no-argument form) or wire up the handler in a single step (the
  * argument-taking form).</p>
  *
- * @author easy-4-java contributors
+ * @author [@Loong Wan](https://github.com/loong10k)
  * @since 3.0.0
  * @see java.lang.reflect.InvocationHandler
  * @see java.lang.reflect.Proxy

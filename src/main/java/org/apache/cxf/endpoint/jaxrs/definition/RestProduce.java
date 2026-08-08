@@ -29,7 +29,7 @@ package org.apache.cxf.endpoint.jaxrs.definition;
  * construction (for example to swap the default wildcard media type
  * for a narrower set of media types).</p>
  *
- * @author easy-4-java contributors
+ * @author [@Loong Wan](https://github.com/loong10k)
  * @since 3.0.0
  * @see RestMethod
  * @see javax.ws.rs.Path
@@ -66,7 +66,7 @@ public class RestProduce {
      *
      * @param path       the URI template; must not be {@code null}.
      * @param mediaTypes the produced media types; when empty the descriptor
-     *                   defaults to {@code "*/*"}.
+     *                   defaults to the wildcard media type (any subtype).
      */
     public RestProduce(String path, String... mediaTypes) {
         this.path = path;
