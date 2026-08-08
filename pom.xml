@@ -192,8 +192,8 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
-                        <skip>true</skip>
-                        <skipTests>true</skipTests>
+                        <skip>false</skip>
+                        <skipTests>false</skipTests>
                         <argLine>-Xmx1024m -XX:PermSize=256m -XX:MaxPermSize=256m
 							-Dfile.encoding=UTF-8</argLine>
                         <additionalClasspathElements>
@@ -351,6 +351,7 @@
                 <maven-jacoco-plugin.version>0.8.15</maven-jacoco-plugin.version>
             
 		<javassist.version>3.32.0-GA</javassist.version>
+        <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
 		<javax-ws-rs-api.version>2.1.1</javax-ws-rs-api.version></properties>
         </profile>
         <!-- 发布到 Maven Central Portal：mvn -Prelease deploy（GPG 签名 + 源码 + Javadoc + Central 发布插件） -->
@@ -526,6 +527,7 @@
         <junit-jupiter.version>6.1.0</junit-jupiter.version>
         <lombok.version>1.18.46</lombok.version>
         <slf4j.version>2.0.18</slf4j.version>
+        <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
     </properties>
 
     <!-- 依赖版本统一管理（dependencyManagement） -->
