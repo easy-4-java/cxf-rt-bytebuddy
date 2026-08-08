@@ -16,44 +16,99 @@
 package org.apache.cxf.endpoint.jaxrs.definition;
 
 /**
- * 数据绑定对象，用于通过<code>@WebBound</code>注解实现与方法相关数据的绑定
+ * Mutable value object that transports the data bound to a method or type
+ * via the {@link org.apache.cxf.endpoint.annotation.WebBound} annotation.
+ *
+ * <p>The instance carries two correlated pieces of information:</p>
+ * <ul>
+ *   <li>{@link #uid} &mdash; a logical identifier, typically a primary
+ *       key, propagated alongside the binding so that the implementation
+ *       can perform data lookups.</li>
+ *   <li>{@link #json} &mdash; a JSON encoded payload that the runtime
+ *       will marshal into the bound object. JSON is used as the wire
+ *       format to keep the binding language neutral.</li>
+ * </ul>
+ *
+ * <p>Both fields default to an empty string so that the helper can be
+ * instantiated before the dispatching layer has had a chance to populate
+ * it.</p>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 2.0.0
+ * @see org.apache.cxf.endpoint.annotation.WebBound
  */
 public class RestBound {
-    
+
+    /**
+     * Builds a new instance with the supplied identifier.
+     *
+     * @param uid the binding identifier; may be {@code null} but is
+     *            normalised to an empty string by the field default.
+     */
     public RestBound(String uid) {
-    	this.uid = uid;
-	}
-    
-	public RestBound(String uid, String json) {
-		this.uid = uid;
-		this.json = json;
-	}
+        this.uid = uid;
+    }
 
-	/**
-	 * 1、uid：某个数据主键，可用于传输主键ID在实现对象中进行数据提取
-	 */
-	private String uid = "";
+    /**
+     * Builds a new instance with the supplied identifier and JSON payload.
+     *
+     * @param uid  the binding identifier; may be {@code null}.
+     * @param json the JSON encoded payload; may be {@code null}.
+     */
+    public RestBound(String uid, String json) {
+        this.uid = uid;
+        this.json = json;
+    }
 
-	/**
-	 * 2、json：绑定的数据对象JSON格式，为了方便，这里采用json进行数据传输
-	 */
-	private String json = "";
+    /**
+     * Identifier (typically a primary key) that the implementation can
+     * use to locate additional data. Defaults to an empty string.
+     */
+    private String uid = "";
 
-	public String getUid() {
-		return uid;
-	}
+    /**
+     * JSON encoded payload that the runtime will marshal into the bound
+     * object. Defaults to an empty string.
+     */
+    private String json = "";
 
-	public void setUid(String uid) {
-		this.uid = uid;
-	}
+    /**
+     * Returns the binding identifier.
+     *
+     * @return the identifier, never {@code null} (defaults to an empty
+     *         string).
+     */
+    public String getUid() {
+        return uid;
+    }
 
-	public String getJson() {
-		return json;
-	}
+    /**
+     * Stores the binding identifier.
+     *
+     * @param uid the new identifier; may be {@code null}.
+     */
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
-	public void setJson(String json) {
-		this.json = json;
-	}
+    /**
+     * Returns the JSON encoded payload.
+     *
+     * @return the JSON payload, never {@code null} (defaults to an empty
+     *         string).
+     */
+    public String getJson() {
+        return json;
+    }
+
+    /**
+     * Stores the JSON encoded payload.
+     *
+     * @param json the new JSON payload; may be {@code null}.
+     */
+    public void setJson(String json) {
+        this.json = json;
+    }
 
 }
 
