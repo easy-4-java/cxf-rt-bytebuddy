@@ -343,8 +343,9 @@
                 <jdk>[1.8,)</jdk>
             </activation>
             <properties>
-                <additionalparam>-Xdoclint:none</additionalparam>
-                <javassist.version>3.32.0-GA</javassist.version>
+        <!-- Dependency versions -->
+        <additionalparam>-Xdoclint:none</additionalparam>
+        <javassist.version>3.32.0-GA</javassist.version>
 		<javax-ws-rs-api.version>2.1.1</javax-ws-rs-api.version></properties>
         </profile>
         
