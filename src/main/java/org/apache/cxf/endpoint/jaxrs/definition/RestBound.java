@@ -33,7 +33,7 @@ package org.apache.cxf.endpoint.jaxrs.definition;
  * instantiated before the dispatching layer has had a chance to populate
  * it.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see org.apache.cxf.endpoint.annotation.WebBound
  */

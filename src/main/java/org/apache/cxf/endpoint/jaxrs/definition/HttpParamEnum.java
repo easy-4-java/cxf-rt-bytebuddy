@@ -29,7 +29,7 @@ import javax.ws.rs.Encoded;
  * one of these categories cannot be inferred by the byte-buddy agent and
  * must be expressed with an explicit annotation on the resource method.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see javax.ws.rs.BeanParam
  * @see javax.ws.rs.CookieParam

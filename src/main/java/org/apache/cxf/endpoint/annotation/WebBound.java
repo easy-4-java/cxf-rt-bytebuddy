@@ -42,7 +42,7 @@ import java.lang.annotation.Target;
  * {@linkplain Inherited inherited}, and is retained at runtime so the
  * byte-buddy agent can locate it via reflection.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see WebEndpoint
  * @see org.apache.cxf.endpoint.jaxrs.definition.RestBound

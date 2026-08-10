@@ -28,7 +28,7 @@ import javax.ws.rs.HttpMethod;
  * offers a defensive lookup that throws {@link NoSuchElementException} when
  * the supplied key is not one of the seven supported verbs.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see javax.ws.rs.HttpMethod
  */

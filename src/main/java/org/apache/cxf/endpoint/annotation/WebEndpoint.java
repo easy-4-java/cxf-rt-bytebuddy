@@ -37,7 +37,7 @@ import java.lang.annotation.Target;
  * reflection. All attributes default to an empty array so that an
  * empty annotation is legal and produces a minimally configured endpoint.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see WebBound
  * @see org.apache.cxf.endpoint.EndpointApi

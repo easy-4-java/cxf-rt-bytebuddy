@@ -29,7 +29,7 @@ package org.apache.cxf.endpoint.jaxrs.definition;
  * construction (for example to swap the default wildcard media type
  * for a narrower set of media types).</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see RestMethod
  * @see javax.ws.rs.Path
