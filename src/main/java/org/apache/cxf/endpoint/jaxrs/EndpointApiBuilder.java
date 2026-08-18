@@ -277,7 +277,7 @@ public class EndpointApiBuilder<T extends EndpointApi> implements Builder<Unload
 	/**
 	 * 
 	 * javassist在加载类时会用Hashtable将类信息缓存到内存中，这样随着类的加载，内存会越来越大，甚至导致内存溢出。如果应用中要加载的类比较多，建议在使用完CtClass之后删除缓存
-	 * @author 		： <a href="https://github.com/hiwepy">hiwepy</a>
+	 * @author 		： <a href="https://github.com/easy-4-java">hiwepy</a>
 	 * @return
 	 * @throws CannotCompileException
 	 */

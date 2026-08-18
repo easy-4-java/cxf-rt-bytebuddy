@@ -14,7 +14,7 @@ import org.apache.cxf.endpoint.jaxws.definition.SoapResult;
 import org.apache.cxf.endpoint.jaxws.definition.SoapService;
 import org.apache.cxf.endpoint.utils.JaxwsEndpointApiUtils;
 
-import io.github.hiwepy.javassist.utils.ClassPoolFactory;
+import io.github.easy4j.javassist.utils.ClassPoolFactory;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -148,7 +148,7 @@ public class EndpointApiImplBuilder extends EndpointApiBuilder implements Builde
 	/**
 	 * 
 	 * javassist在加载类时会用Hashtable将类信息缓存到内存中，这样随着类的加载，内存会越来越大，甚至导致内存溢出。如果应用中要加载的类比较多，建议在使用完CtClass之后删除缓存
-	 * @author 		： <a href="https://github.com/hiwepy">hiwepy</a>
+	 * @author 		： <a href="https://github.com/easy-4-java">hiwepy</a>
 	 * @return
 	 * @throws CannotCompileException
 	 */
