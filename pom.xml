@@ -42,15 +42,15 @@
     <properties>
         <!-- ═══ 第一段: 基础属性（自然排序）═══ -->
         <java.version>1.8</java.version>
-        <maven.compiler.release>${java.version}</maven.compiler.release>
+        <maven.compiler.release>8</maven.compiler.release>
         <maven.version>3.9.16</maven.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Dependency versions -->
         <additionalparam>-Xdoclint:none</additionalparam>
         <byte-buddy.version>1.14.16</byte-buddy.version>
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
-        <commons-io.version>2.20.0</commons-io.version>
-        <commons-lang3.version>3.18.0</commons-lang3.version>
+        <commons-io.version>2.22.0</commons-io.version>
+        <commons-lang3.version>3.20.0</commons-lang3.version>
         <cxf.version>4.0.5</cxf.version>
         <javax-ws-rs-api.version>2.1.1</javax-ws-rs-api.version>
         <javassist.version>3.32.0-GA</javassist.version>
@@ -379,8 +379,7 @@
                     <configuration>
                         <skip>false</skip>
                         <skipTests>false</skipTests>
-                        <argLine>-Xmx1024m
-							-Dfile.encoding=UTF-8</argLine>
+                        <argLine>@{argLine} -Xmx1024m -Dfile.encoding=UTF-8</argLine>
                         <additionalClasspathElements>
                             <additionalClasspathElement>${basedir}/target/test-classes</additionalClasspathElement>
                         </additionalClasspathElements>
