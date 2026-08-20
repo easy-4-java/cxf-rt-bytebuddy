@@ -45,8 +45,8 @@
         <!-- Dependency versions -->
         <byte-buddy.version>1.18.10</byte-buddy.version>
         <commons-beanutils.version>1.11.0</commons-beanutils.version>
-        <commons-io.version>2.22.0</commons-io.version>
-        <commons-lang3.version>3.20.0</commons-lang3.version>
+        <commons-io.version>2.20.0</commons-io.version>
+        <commons-lang3.version>3.18.0</commons-lang3.version>
         <cxf.version>4.2.2</cxf.version>
         <javassist.version>3.32.0-GA</javassist.version>
         <javax-ws-rs-api.version>2.1.1</javax-ws-rs-api.version>
