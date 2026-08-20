@@ -68,16 +68,43 @@ public class RestProduceTest {
     }
 
     /**
-     * Calling the constructor with no media types must leave the field
-     * as an empty array.
+     * Calling the constructor with no media types must fall back to the
+     * wildcard media type so the descriptor remains valid without
+     * explicit produces declarations.
      */
     @Test
-    public void shouldAcceptEmptyMediaTypes() {
+    public void shouldFallbackToWildcardWhenNoMediaTypesSupplied() {
         RestProduce produce = new RestProduce("/items");
 
         assertNotNull(produce.getMediaTypes());
-        assertEquals(0, produce.getMediaTypes().length);
+        assertEquals(1, produce.getMediaTypes().length);
+        assertEquals("*/*", produce.getMediaTypes()[0]);
         assertEquals("/items", produce.getPath());
+    }
+
+    /**
+     * Passing a null var-args array must behave identically to passing
+     * no media types, falling back to the wildcard default.
+     */
+    @Test
+    public void shouldTreatNullMediaTypesArgAsDefaultFallback() {
+        RestProduce produce = new RestProduce("/items", (String[]) null);
+
+        assertNotNull(produce.getMediaTypes());
+        assertArrayEquals(new String[]{"*/*"}, produce.getMediaTypes());
+    }
+
+    /**
+     * Passing an explicit empty array must also fall back to the
+     * wildcard default rather than remain as an empty array (which
+     * would look like "produces nothing" to downstream consumers).
+     */
+    @Test
+    public void shouldTreatEmptyArrayAsDefaultFallback() {
+        RestProduce produce = new RestProduce("/items", new String[0]);
+
+        assertNotNull(produce.getMediaTypes());
+        assertArrayEquals(new String[]{"*/*"}, produce.getMediaTypes());
     }
 
     /**

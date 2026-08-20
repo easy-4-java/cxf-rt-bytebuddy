@@ -92,7 +92,7 @@ public class HttpMethodEnumTest {
             fail("expected NoSuchElementException");
         } catch (NoSuchElementException expected) {
             assertNotNull(expected.getMessage());
-            assertEquals("Cannot found ApiType with key 'TRACE'.", expected.getMessage());
+            assertEquals("Cannot found HttpMethodEnum with key 'TRACE'.", expected.getMessage());
         }
     }
 
