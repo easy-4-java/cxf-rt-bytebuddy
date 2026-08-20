@@ -1,54 +1,355 @@
-# CI workflow for the feature/1.0.x line (JDK 8)
+# CI workflow for the three-branch cxf-rt-bytebuddy Git Worktree model.
 #
-# Triggers:
-#   - push / pull_request on the feature/1.0.x branch
-#   - manual workflow_dispatch
+#   ┌────────────────────┬──────────────┬────────────────────────┬──────────┬─────────────────┐
+#   │ Branch             │ Native JDK   │ Compiler config        │ CXF NS   │ Bytecode major  │
+#   ├────────────────────┼──────────────┼────────────────────────┼──────────┼─────────────────┤
+#   │ feature/3.0.x      │ OpenJDK 21   │ <release>21</release>  │ jakarta.*│ 65 (Java 21)    │
+#   │ feature/2.0.x      │ Corretto 17  │ <release>17</release>  │ jakarta.*│ 61 (Java 17)    │
+#   │ feature/1.0.x      │ Corretto 8   │ source 1.8 + target 1.8│ javax.*  │ 52 (Java 8)     │
+#   └────────────────────┴──────────────┴────────────────────────┴──────────┴─────────────────┘
 #
-# Runs `mvn -B clean verify` which includes the JaCoCo coverage gate
-# (90% line coverage, haltOnFailure=false) configured in the POM.
+# Trigger matrix (each branch only runs its own job):
+#   - push / pull_request -> job matching the branch name
+#   - workflow_dispatch    -> any of the three branches can be dispatched manually
+#
+# Each job runs:
+#   1. setup JDK (distribution per branch)
+#   2. maven build (mvnw for 3.0.x / mvn for 2.0.x and 1.0.x)
+#   3. javap bytecode-major-version gate (must equal the expected value for the JDK line)
+#   4. artifact upload: JaCoCo report + surefire reports
 name: CI
 
 on:
   push:
-    branches: [feature/1.0.x]
+    branches:
+      - feature/3.0.x
+      - feature/2.0.x
+      - feature/1.0.x
   pull_request:
-    branches: [feature/1.0.x]
+    branches:
+      - feature/3.0.x
+      - feature/2.0.x
+      - feature/1.0.x
   workflow_dispatch:
+    inputs:
+      branch-line:
+        description: 'Branch / JDK line to build (one of 3.0.x, 2.0.x, 1.0.x; defaults to current ref)'
+        required: false
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - 3.0.x
+          - 2.0.x
+          - 1.0.x
 
 permissions:
   contents: read
 
+# ─────────────────────────────────────────────────────────────────────
+# Shared constants extracted via YAML anchors so the three jobs stay
+# structurally identical but branch-specific knobs are in one place.
+# ─────────────────────────────────────────────────────────────────────
+x-3x-config: &x-3x-config
+  name: 'feature/3.0.x · JDK 21 (OpenJDK Temurin) · Maven 4 wrapper'
+  runs-on: ubuntu-latest
+  timeout-minutes: 30
+  if: github.ref_name == 'feature/3.0.x' || (github.event_name == 'workflow_dispatch' && (inputs.branch-line == '3.0.x' || inputs.branch-line == 'auto' && github.ref_name == 'feature/3.0.x'))
+  env:
+    EXPECTED_BYTECODE_MAJOR: '65'   # Java 21
+    EXPECTED_CXF_NS:    'jakarta'
+    MAVEN_CMD:          './mvnw -B --no-transfer-progress clean verify'
+
+x-2x-config: &x-2x-config
+  name: 'feature/2.0.x · JDK 17 (Corretto) · Maven 3'
+  runs-on: ubuntu-latest
+  timeout-minutes: 30
+  if: github.ref_name == 'feature/2.0.x' || (github.event_name == 'workflow_dispatch' && (inputs.branch-line == '2.0.x' || inputs.branch-line == 'auto' && github.ref_name == 'feature/2.0.x'))
+  env:
+    EXPECTED_BYTECODE_MAJOR: '61'   # Java 17
+    EXPECTED_CXF_NS:    'jakarta'
+    MAVEN_CMD:          'mvn -B --no-transfer-progress clean verify'
+
+x-1x-config: &x-1x-config
+  name: 'feature/1.0.x · JDK 8 (Corretto) · native compile (NO release=8 cross)'
+  runs-on: ubuntu-latest
+  timeout-minutes: 30
+  if: github.ref_name == 'feature/1.0.x' || (github.event_name == 'workflow_dispatch' && (inputs.branch-line == '1.0.x' || inputs.branch-line == 'auto' && github.ref_name == 'feature/1.0.x'))
+  env:
+    # ⚠️ Per user requirement 2026-08-20: 1.0.x MUST compile AND target on real
+    #    JDK 1.8 natively; `--release 8` (JDK 9+ only) and cross-compile on
+    #    JDK 17+ are FORBIDDEN here. Corretto 8 is the reference JDK.
+    EXPECTED_BYTECODE_MAJOR: '52'   # Java 8
+    EXPECTED_CXF_NS:    'javax'
+    MAVEN_CMD:          'mvn -B --no-transfer-progress clean verify'
+
 jobs:
-  build:
-    name: JDK 8 Build & Verify
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+  # ───────────────────────── feature/3.0.x ─────────────────────────
+  build-jdk21:
+    <<: *x-3x-config
     steps:
-      - name: Checkout source
+      - name: 'Checkout source (feature/3.0.x)'
         uses: actions/checkout@v7
 
-      - name: Set up JDK 8
+      - name: 'Set up JDK 21 (Temurin = reference for 3.0.x, mirrors MS OpenJDK 21 locally)'
         uses: actions/setup-java@v5
         with:
           distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: 'Print toolchain versions (debug)'
+        run: |
+          java -version
+          javac -version
+          if [ -x ./mvnw ]; then ./mvnw --version; else mvn --version; fi
+
+      - name: 'Build + verify with JaCoCo coverage gate (haltOnFailure=false by POM)'
+        run: $MAVEN_CMD
+
+      - name: 'Bytecode gate: 7 main classes must report major version 65 (Java 21)'
+        run: |
+          set -euo pipefail
+          BASE=target/classes
+          FAIL=0
+          for f in \
+            org/apache/cxf/endpoint/EndpointApi.class \
+            org/apache/cxf/endpoint/jaxrs/definition/RestMethod.class \
+            org/apache/cxf/endpoint/jaxrs/definition/HttpMethodEnum.class \
+            org/apache/cxf/endpoint/jaxrs/definition/RestProduce.class \
+            org/apache/cxf/endpoint/jaxrs/definition/HttpParamEnum.class \
+            org/apache/cxf/endpoint/jaxrs/definition/RestParam.class \
+            org/apache/cxf/endpoint/jaxrs/definition/RestBound.class
+          do
+            MAJ=$(javap -verbose "$BASE/$f" 2>/dev/null | awk '/major version/ {print $3; exit}')
+            echo "$f -> major=$MAJ (expect $EXPECTED_BYTECODE_MAJOR)"
+            if [ "$MAJ" != "$EXPECTED_BYTECODE_MAJOR" ]; then FAIL=1; fi
+          done
+          if [ "$FAIL" -ne 0 ]; then
+            echo "::error::Bytecode major mismatch on 3.0.x (expected $EXPECTED_BYTECODE_MAJOR)"
+            exit 1
+          fi
+
+      - name: 'Namespace gate: confirm cxf frontend uses jakarta.* on 3.0.x'
+        run: |
+          # If the pom resolved anything under javax.ws.rs / cxf-rt-frontend-* with 3.x line, fail.
+          if grep -r '<cxf.version>3\.5\.' pom.xml; then
+            echo "::error::feature/3.0.x must NOT depend on CXF 3.5.x (javax.* line)"
+            exit 1
+          fi
+          echo "feature/3.0.x uses CXF 4.x jakarta.* line ✓"
+
+      - name: 'Upload JaCoCo coverage report (3.0.x)'
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: jacoco-coverage-3.0.x
+          path: target/site/jacoco
+          retention-days: 30
+
+      - name: 'Upload surefire reports (3.0.x)'
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: surefire-reports-3.0.x
+          path: target/surefire-reports
+          retention-days: 30
+
+  # ───────────────────────── feature/2.0.x ─────────────────────────
+  build-jdk17:
+    <<: *x-2x-config
+    steps:
+      - name: 'Checkout source (feature/2.0.x)'
+        uses: actions/checkout@v7
+
+      - name: 'Set up JDK 17 (Corretto = reference for 2.0.x)'
+        uses: actions/setup-java@v5
+        with:
+          distribution: corretto
+          java-version: '17'
+          cache: maven
+
+      - name: 'Print toolchain versions (debug)'
+        run: |
+          java -version
+          javac -version
+          mvn --version
+
+      - name: 'Build + verify with JaCoCo coverage gate'
+        run: $MAVEN_CMD
+
+      - name: 'Bytecode gate: 7 main classes must report major version 61 (Java 17)'
+        run: |
+          set -euo pipefail
+          BASE=target/classes
+          FAIL=0
+          for f in \
+            org/apache/cxf/endpoint/EndpointApi.class \
+            org/apache/cxf/endpoint/jaxrs/definition/RestMethod.class \
+            org/apache/cxf/endpoint/jaxrs/definition/HttpMethodEnum.class \
+            org/apache/cxf/endpoint/jaxrs/definition/RestProduce.class \
+            org/apache/cxf/endpoint/jaxrs/definition/HttpParamEnum.class \
+            org/apache/cxf/endpoint/jaxrs/definition/RestParam.class \
+            org/apache/cxf/endpoint/jaxrs/definition/RestBound.class
+          do
+            MAJ=$(javap -verbose "$BASE/$f" 2>/dev/null | awk '/major version/ {print $3; exit}')
+            echo "$f -> major=$MAJ (expect $EXPECTED_BYTECODE_MAJOR)"
+            if [ "$MAJ" != "$EXPECTED_BYTECODE_MAJOR" ]; then FAIL=1; fi
+          done
+          if [ "$FAIL" -ne 0 ]; then
+            echo "::error::Bytecode major mismatch on 2.0.x (expected $EXPECTED_BYTECODE_MAJOR)"
+            exit 1
+          fi
+
+      - name: 'Namespace gate: confirm cxf frontend uses jakarta.* on 2.0.x'
+        run: |
+          if grep -r '<cxf.version>3\.5\.' pom.xml; then
+            echo "::error::feature/2.0.x must NOT depend on CXF 3.5.x (javax.* line)"
+            exit 1
+          fi
+          echo "feature/2.0.x uses CXF 4.x jakarta.* line ✓"
+
+      - name: 'Upload JaCoCo coverage report (2.0.x)'
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: jacoco-coverage-2.0.x
+          path: target/site/jacoco
+          retention-days: 30
+
+      - name: 'Upload surefire reports (2.0.x)'
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: surefire-reports-2.0.x
+          path: target/surefire-reports
+          retention-days: 30
+
+  # ───────────────────────── feature/1.0.x ─────────────────────────
+  build-jdk8:
+    <<: *x-1x-config
+    steps:
+      - name: 'Checkout source (feature/1.0.x)'
+        uses: actions/checkout@v7
+
+      - name: 'Set up JDK 8 (Corretto = reference for 1.0.x — native compile ONLY)'
+        uses: actions/setup-java@v5
+        with:
+          distribution: corretto
           java-version: '8'
           cache: maven
 
-      - name: Build and verify with JaCoCo coverage gate
-        run: mvn -B --no-transfer-progress clean verify
+      - name: 'Print toolchain versions (debug) — MUST show 1.8.x only'
+        run: |
+          java -version 2>&1
+          javac -version 2>&1
+          mvn --version
 
-      - name: Upload JaCoCo coverage report
+      - name: 'Assert we are actually running on real JDK 8 javac (not a JDK 17/21 pretending via --release 8)'
+        run: |
+          set -euo pipefail
+          JAVAVER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2; exit}')
+          JAVACVER=$(javac -version 2>&1 | awk '{print $2; exit}')
+          echo "java  = $JAVAVER"
+          echo "javac = $JAVACVER"
+          case "$JAVAVER" in
+            1.8.*|8.*) echo "✓ Running on real JDK 8" ;;
+            *)         echo "::error::1.0.x build requires real JDK 8, but got java=$JAVAVER" ; exit 1 ;;
+          esac
+          case "$JAVACVER" in
+            1.8.*|8.*) echo "✓ Running on real javac 8" ;;
+            *)         echo "::error::1.0.x build requires real javac 8, but got javac=$JAVACVER" ; exit 1 ;;
+          esac
+          # Secondary check: real JDK 8 javac has NO --release switch. If
+          # `javac --release 8 Foo.java` would work, we are NOT on JDK 8.
+          if javac --help 2>&1 | grep -q -- '--release'; then
+            echo "::error::javac supports --release -> this is NOT real JDK 8 javac"
+            exit 1
+          fi
+          echo "✓ javac has no --release flag (JDK 8 specific guarantee confirmed)"
+
+      - name: 'Assert pom uses <source>/<target> 1.8 and NOT <maven.compiler.release>'
+        run: |
+          set -euo pipefail
+          if grep -qE '<maven.compiler.release>' pom.xml; then
+            echo "::error::pom.xml contains <maven.compiler.release> which JDK 8 javac does not support. Use <source>1.8</source> + <target>1.8</target> instead."
+            exit 1
+          fi
+          grep -qE '<maven.compiler.source>1\.8</maven.compiler.source>' pom.xml \
+            && grep -qE '<maven.compiler.target>1\.8</maven.compiler.target>' pom.xml \
+            && echo "✓ pom uses the native JDK 8 source/target pair" \
+            || { echo "::error::pom.xml missing <maven.compiler.source>1.8 or <maven.compiler.target>1.8"; exit 1; }
+
+      - name: 'Build + verify with JaCoCo coverage gate — Corretto 8 javac, NO --release, javax.* CXF 3.5.3'
+        run: $MAVEN_CMD
+
+      - name: 'Bytecode gate: 7 main classes must report major version 52 (Java 8)'
+        run: |
+          set -euo pipefail
+          BASE=target/classes
+          FAIL=0
+          for f in \
+            org/apache/cxf/endpoint/EndpointApi.class \
+            org/apache/cxf/endpoint/jaxrs/definition/RestMethod.class \
+            org/apache/cxf/endpoint/jaxrs/definition/HttpMethodEnum.class \
+            org/apache/cxf/endpoint/jaxrs/definition/RestProduce.class \
+            org/apache/cxf/endpoint/jaxrs/definition/HttpParamEnum.class \
+            org/apache/cxf/endpoint/jaxrs/definition/RestParam.class \
+            org/apache/cxf/endpoint/jaxrs/definition/RestBound.class
+          do
+            MAJ=$(javap -verbose "$BASE/$f" 2>/dev/null | awk '/major version/ {print $3; exit}')
+            echo "$f -> major=$MAJ (expect $EXPECTED_BYTECODE_MAJOR)"
+            if [ "$MAJ" != "$EXPECTED_BYTECODE_MAJOR" ]; then FAIL=1; fi
+          done
+          if [ "$FAIL" -ne 0 ]; then
+            echo "::error::Bytecode major mismatch on 1.0.x (expected $EXPECTED_BYTECODE_MAJOR = Java 8)"
+            exit 1
+          fi
+
+      - name: 'Namespace & version gate: feature/1.0.x must use CXF 3.5.x (javax.*) not CXF 4.x (jakarta.*)'
+        run: |
+          set -euo pipefail
+          # 1) pom must declare cxf.version 3.5.x
+          CXFVER=$(grep -E '<cxf.version>' pom.xml | head -1 | sed -E 's/.*<cxf.version>(.*)<\/cxf.version>.*/\1/')
+          echo "pom cxf.version = $CXFVER"
+          case "$CXFVER" in
+            3.5.*) echo "✓ CXF 3.5.x (javax.*, JDK 8 compatible)" ;;
+            4.*)   echo "::error::feature/1.0.x uses CXF $CXFVER which needs JDK >= 11. Downgrade to CXF 3.5.3 (javax.*)." ; exit 1 ;;
+            *)     echo "::warning::Unexpected CXF version $CXFVER, not asserting further" ;;
+          esac
+          # 2) actual imports in main/ must be javax.ws.rs, NOT jakarta.ws.rs
+          IMP_JAKARTA=$(grep -rnE 'import\s+jakarta\.ws\.rs' src/main/java || true)
+          IMP_JAVAX=$(grep -rnE   'import\s+javax\.ws\.rs'   src/main/java || true)
+          echo "-- main/src jakarta.* imports --"; echo "$IMP_JAKARTA"
+          echo "-- main/src javax.*   imports --"; echo "$IMP_JAVAX"
+          if [ -n "$IMP_JAKARTA" ]; then
+            echo "::error::main sources contain jakarta.ws.rs imports. feature/1.0.x must use javax.ws.rs (CXF 3.5.x / Java EE 8)."
+            exit 1
+          fi
+          if [ -z "$IMP_JAVAX" ]; then
+            echo "::warning::No javax.ws.rs imports found — is definition model actually using the JAX-RS annotations?"
+          fi
+
+      - name: 'Assert --add-opens is NOT used on 1.0.x (JDK 8 JVM has no module system, would fail hard)'
+        run: |
+          if grep -rnE 'add-opens|--add-exports|--module-path' pom.xml .mvn maven 2>/dev/null; then
+            echo "::error::feature/1.0.x must not contain --add-opens / module-system flags; JDK 8 JVM does not support them."
+            exit 1
+          fi
+          echo "✓ 1.0.x surefire JVM args contain no JDK 9+ module flags"
+
+      - name: 'Upload JaCoCo coverage report (1.0.x — native JDK 8 build)'
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: jacoco-coverage
+          name: jacoco-coverage-1.0.x-nativeJDK8
           path: target/site/jacoco
-          retention-days: 14
+          retention-days: 30
 
-      - name: Upload surefire reports
+      - name: 'Upload surefire reports (1.0.x — native JDK 8 build)'
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: surefire-reports
+          name: surefire-reports-1.0.x-nativeJDK8
           path: target/surefire-reports
-          retention-days: 14
+          retention-days: 30

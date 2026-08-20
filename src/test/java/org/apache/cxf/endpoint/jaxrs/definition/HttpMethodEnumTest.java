@@ -32,7 +32,7 @@ import static org.junit.Assert.fail;
  * case-insensitive lookup, and the negative case where the supplied
  * key does not match any enum value.</p>
  *
- * @since 1.0.0
+ * @since 3.0.0
  */
 public class HttpMethodEnumTest {
 
@@ -92,7 +92,7 @@ public class HttpMethodEnumTest {
             fail("expected NoSuchElementException");
         } catch (NoSuchElementException expected) {
             assertNotNull(expected.getMessage());
-            assertEquals("Cannot found ApiType with key 'TRACE'.", expected.getMessage());
+            assertEquals("Cannot found HttpMethodEnum with key 'TRACE'.", expected.getMessage());
         }
     }
 
