@@ -107,7 +107,7 @@ public enum HttpMethodEnum {
                 return apiType;
             }
         }
-        throw new NoSuchElementException("Cannot found ApiType with key '" + key + "'.");
+        throw new NoSuchElementException("Cannot found HttpMethodEnum with key '" + key + "'.");
     }
 
 }

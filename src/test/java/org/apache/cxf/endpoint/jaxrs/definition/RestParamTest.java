@@ -24,11 +24,11 @@ import static org.junit.Assert.assertSame;
 /**
  * Unit tests for {@link RestParam}.
  *
- * <p>Exercises every constructor and accessor, including the legacy
- * behaviour where the three-argument constructor does not propagate the
- * {@code from} argument.</p>
+ * <p>Exercises every constructor and accessor, confirming the
+ * {@code from} argument is correctly assigned by the three- and
+ * four-argument constructors.</p>
  *
- * @since 2.0.0
+ * @since 3.0.0
  */
 public class RestParamTest {
 
@@ -48,24 +48,22 @@ public class RestParamTest {
     }
 
     /**
-     * The three-argument constructor must record {@code type} and
-     * {@code name} but, due to the historical bug, must leave
-     * {@code from} at the default {@link HttpParamEnum#QUERY}.
+     * The three-argument constructor must record {@code type},
+     * {@code name}, and the supplied {@code from} binding location.
      */
     @Test
-    public void shouldPreserveLegacyBehaviourForThreeArgConstructor() {
+    public void shouldAssignFromFromThreeArgConstructor() {
         RestParam<Integer> param = new RestParam<>(Integer.class, "count", HttpParamEnum.HEADER);
 
         assertSame(Integer.class, param.getType());
         assertEquals("count", param.getName());
-        assertSame("three-arg ctor must NOT assign from", HttpParamEnum.QUERY, param.getFrom());
+        assertSame("three-arg ctor must assign from", HttpParamEnum.HEADER, param.getFrom());
         assertNull(param.getDef());
     }
 
     /**
-     * The four-argument constructor stores type, name, and def, but due
-     * to a legacy bug does not assign the {@code from} argument; the
-     * binding location remains the default {@link HttpParamEnum#QUERY}.
+     * The four-argument constructor must store type, name, from binding
+     * location, and the default value.
      */
     @Test
     public void shouldBuildWithAllFourAttributes() {
@@ -73,7 +71,7 @@ public class RestParamTest {
 
         assertSame(Long.class, param.getType());
         assertEquals("size", param.getName());
-        assertSame("four-arg ctor must NOT assign from", HttpParamEnum.QUERY, param.getFrom());
+        assertSame("four-arg ctor must assign from", HttpParamEnum.PATH, param.getFrom());
         assertEquals("0", param.getDef());
     }
 
@@ -135,5 +133,34 @@ public class RestParamTest {
     public void shouldDefaultFromToQuery() {
         assertSame(HttpParamEnum.QUERY, new RestParam<>(String.class, "a").getFrom());
         assertSame(HttpParamEnum.QUERY, new RestParam<>(String.class, "b", "d").getFrom());
+    }
+
+    /**
+     * The three-argument constructor must accept a {@code null} from
+     * value without throwing; the field will then read as {@code null}
+     * (overriding the field default).
+     */
+    @Test
+    public void shouldAcceptNullFromInThreeArgCtor() {
+        RestParam<String> param = new RestParam<>(String.class, "name", (HttpParamEnum) null);
+
+        assertSame(String.class, param.getType());
+        assertEquals("name", param.getName());
+        assertNull(param.getFrom());
+        assertNull(param.getDef());
+    }
+
+    /**
+     * The four-argument constructor must accept a {@code null} from
+     * value without throwing.
+     */
+    @Test
+    public void shouldAcceptNullFromInFourArgCtor() {
+        RestParam<String> param = new RestParam<>(String.class, "name", null, "default");
+
+        assertSame(String.class, param.getType());
+        assertEquals("name", param.getName());
+        assertNull(param.getFrom());
+        assertEquals("default", param.getDef());
     }
 }

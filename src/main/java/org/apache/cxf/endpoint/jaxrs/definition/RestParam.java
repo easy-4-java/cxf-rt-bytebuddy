@@ -99,19 +99,14 @@ public class RestParam<T> {
      * Creates a new descriptor with the supplied type, name, and binding
      * location.
      *
-     * <p>Note: this constructor preserves the original behaviour of the
-     * type and does not assign the {@code from} argument to the field. As
-     * a result the binding location will remain the default
-     * {@link HttpParamEnum#QUERY} after this constructor returns.</p>
-     *
      * @param type the Java type of the parameter; must not be {@code null}.
      * @param name the parameter name; must not be {@code null}.
-     * @param from the binding location (not assigned to the field due to
-     *             a legacy bug; see the class note).
+     * @param from the binding location; must not be {@code null}.
      */
     public RestParam(Class<T> type, String name, HttpParamEnum from) {
         this.type = type;
         this.name = name;
+        this.from = from;
     }
 
     /**
@@ -120,16 +115,14 @@ public class RestParam<T> {
      *
      * @param type the Java type of the parameter; must not be {@code null}.
      * @param name the parameter name; must not be {@code null}.
-     * @param from the binding location forwarded to the field (the
-     *             duplicate assignment of {@code name} is preserved to
-     *             match the historical implementation).
+     * @param from the binding location; must not be {@code null}.
      * @param def  the default value used when the request meta-data is
      *             absent; may be {@code null}.
      */
     public RestParam(Class<T> type, String name, HttpParamEnum from, String def) {
         this.type = type;
         this.name = name;
-        this.name = name;
+        this.from = from;
         this.def = def;
     }
 

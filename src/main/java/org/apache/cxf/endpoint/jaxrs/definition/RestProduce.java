@@ -70,7 +70,9 @@ public class RestProduce {
      */
     public RestProduce(String path, String... mediaTypes) {
         this.path = path;
-        this.mediaTypes = mediaTypes;
+        if (mediaTypes != null && mediaTypes.length > 0) {
+            this.mediaTypes = mediaTypes;
+        }
     }
 
     /**
