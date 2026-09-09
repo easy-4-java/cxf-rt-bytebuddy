@@ -510,7 +510,6 @@
                 <jdk>[1.8,)</jdk>
             </activation>
             <properties>
-                <additionalparam>-Xdoclint:none</additionalparam>
             </properties>
         </profile>
         <!-- 发布到 Sonatype OSSRH：mvn -Prelease deploy（源码 + Javadoc + GPG 签名 + 暂存发布插件） -->
